@@ -19,14 +19,14 @@ describe DockingStation do
       subject.dock(@bike2)
     end
 
-    it 'returns the array of docked bikes' do
+    it 'returns the array of docked Bike objects' do
       expect(subject.bikes).to eq([@bike1, @bike2])
     end
   end
 
   describe "#release_bike" do
     context 'when DockingStation is empty' do
-      it 'does not release bike if dock is empty' do
+      it 'does not release a Bike object if dock is empty' do
         expect {subject.release_bike}.to raise_error("No bikes in docking station.")
       end
     end
@@ -37,10 +37,10 @@ describe DockingStation do
         subject.dock(@bike)
       end
 
-      it 'releases a working bike' do
+      it 'releases a Bike object' do
         expect(subject.release_bike).to eq @bike
       end
-      it 'expects bike to be working' do
+      it 'is returning a Bike object which is working' do
         expect(subject.release_bike.working?).to eq true
       end
     end
@@ -52,8 +52,8 @@ describe DockingStation do
       @bike = Bike.new
     end
 
-    context 'when DockingStation has 19- bike(s)' do
-      it 'docks the bike' do
+    context 'when DockingStation is not full' do
+      it 'can dock a Bike object' do
         expect(subject.dock(@bike)).to eq @bike
       end
     end
