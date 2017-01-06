@@ -1,9 +1,10 @@
 class DockingStation
-  attr_reader :bikes, :max_bikes
+  attr_reader :bikes
+
+    DEFAULT_CAPACITY = 20
 
   def initialize
     @bikes = []
-    @max_bikes = 20
   end
 
   def release_bike
@@ -20,7 +21,7 @@ class DockingStation
   private
 
   def full?
-    @bikes.count >= 20
+    @bikes.count >= DEFAULT_CAPACITY
   end
 
   def empty?
