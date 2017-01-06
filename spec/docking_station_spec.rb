@@ -5,17 +5,11 @@ require 'pry-byebug'
 
 describe DockingStation do
 #create a new instance of bike
-  it 'subject responds to release_bike' do
-    expect(subject).to respond_to :release_bike
-  end
 
-  it 'subject responds to .bikes' do
-    expect(subject).to respond_to :bikes
-  end
 
-  it 'subject responding to dock with 1 argument' do
-    expect(subject).to respond_to(:dock).with(1).argument
-  end
+  it { is_expected.to respond_to(:release_bike) }
+  it { is_expected.to respond_to(:bikes)}
+  it { is_expected.to respond_to(:dock).with(1).argument}
 
   describe "#bikes" do
     before do
@@ -31,20 +25,24 @@ describe DockingStation do
   end
 
   describe "#release_bike" do
-    before do
-      @bike = Bike.new
-      subject.dock(@bike)
+    context 'when DockingStation is empty' do
+      it 'does not release bike if dock is empty' do
+        expect {subject.release_bike}.to raise_error("No bikes in docking station.")
+      end
     end
 
-    it 'releases a working bike' do
-      expect(subject.release_bike).to eq @bike
-    end
-    it 'expects bike to be working' do
-      expect(subject.release_bike.working?).to eq true
-    end
-    it 'does not release bike if dock is empty' do
-      subject.release_bike
-      expect {subject.release_bike}.to raise_error("No bikes in docking station.")
+    context 'when DockingStation has 1+ bike(s)' do
+      before do
+        @bike = Bike.new
+        subject.dock(@bike)
+      end
+
+      it 'releases a working bike' do
+        expect(subject.release_bike).to eq @bike
+      end
+      it 'expects bike to be working' do
+        expect(subject.release_bike.working?).to eq true
+      end
     end
 
   end
@@ -54,17 +52,20 @@ describe DockingStation do
       @bike = Bike.new
     end
 
-    #walkthrough
+    context 'when DockingStation has 19- bike(s)' do
       it 'docks the bike' do
         expect(subject.dock(@bike)).to eq @bike
       end
-      #walkthrough
-      it 'raises an error when docking station is full' do
+    end
+
+    context 'when docking station is full' do
+      it 'raises an error' do
         DockingStation::DEFAULT_CAPACITY.times do
           subject.dock(Bike.new)
         end
       expect {subject.dock(Bike.new)}.to raise_error("Docking station is full")
       end
+    end
 
   end
 
