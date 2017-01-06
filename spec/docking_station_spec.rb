@@ -1,47 +1,71 @@
 require 'docking_station'
+require 'bike'
+require 'pry'
+require 'pry-byebug'
 
 describe DockingStation do
-
-bike = Bike.new #we create an instance of Bike in order to use it in some tests
-
-  it 'responds to release_bike' do
+#create a new instance of bike
+  it 'subject responds to release_bike' do
     expect(subject).to respond_to :release_bike
   end
 
-  it 'gives the bike created' do
-    subject.dock(bike)  #we dock a previously created (line 5) bike
-    expect(subject.release_bike).to eq bike
+  it 'subject responds to .bikes' do
+    expect(subject).to respond_to :bikes
   end
 
-  it 'expects bike to be working' do
-    subject.dock(bike)
-    expect((subject.release_bike).working?).to eq true
-  end
-
-  it 'subject responding with 1 argument' do
+  it 'subject responding to dock with 1 argument' do
     expect(subject).to respond_to(:dock).with(1).argument
   end
 
-  it 'subject responds to .bike' do
-    expect(subject).to respond_to :bike
+  describe "#bikes" do
+    before do
+      @bike1 = Bike.new
+      @bike2 = Bike.new
+      subject.dock(@bike1)
+      subject.dock(@bike2)
+    end
+
+    it 'returns the array of docked bikes' do
+      expect(subject.bikes).to eq([@bike1, @bike2])
+    end
   end
 
-#walkthrough
-  it 'docks the bike' do
-    expect(subject.dock(bike)).to eq bike
+  describe "#release_bike" do
+    before do
+      @bike = Bike.new
+      subject.dock(@bike)
+    end
+
+    it 'releases a working bike' do
+      expect(subject.release_bike).to eq @bike
+    end
+    it 'expects bike to be working' do
+      expect(subject.release_bike.working?).to eq true
+    end
+    it 'does not release bike if dock is empty' do
+      subject.release_bike
+      expect {subject.release_bike}.to raise_error("No bikes in docking station.")
+    end
+
   end
 
-  it 'returns docked bike' do
-    subject.dock(bike)
-    expect(subject.bike).to eq bike
+  describe "#dock(bike)" do
+    before do
+      @bike = Bike.new
+    end
+
+    #walkthrough
+      it 'docks the bike' do
+        expect(subject.dock(@bike)).to eq @bike
+      end
+      #walkthrough
+      it 'raises an error when docking station is full' do
+        20.times {subject.dock(Bike.new)}
+        expect {subject.dock(Bike.new)}.to raise_error("Docking station is full")
+      end
+
   end
 
-  it 'does not release bike if dock is empty' do
-    expect {subject.release_bike}.to raise_error("No bikes in docking station.")
-  end
 
-  it 'does not accept a bike when full' do
-    subject.dock(bike)
-    expect {subject.dock(bike)}.to raise_error("Docking station is full")
-  end
+
 end
