@@ -11,6 +11,17 @@ describe DockingStation do
   it { is_expected.to respond_to(:bikes)}
   it { is_expected.to respond_to(:dock).with(1).argument}
 
+  describe "#initialize(capacity = DEFAULT)" do
+    context "when creating a new object" do
+      it "object can be created without parameters" do
+        expect(DockingStation.new.class).to eq(DockingStation)
+      end
+      it "object can be created with a given capacity on first parameter" do
+        expect(DockingStation.new(35).class).to eq(DockingStation)
+      end
+    end
+  end
+
   describe "#bikes" do
     before do
       @bike1 = Bike.new
@@ -59,11 +70,22 @@ describe DockingStation do
     end
 
     context 'when docking station is full' do
+      before do
+        DockingStation::DEFAULT_CAPACITY.times { subject.dock(Bike.new) }
+      end
       it 'raises an error' do
-        DockingStation::DEFAULT_CAPACITY.times do
-          subject.dock(Bike.new)
-        end
-      expect {subject.dock(Bike.new)}.to raise_error("Docking station is full")
+        expect {subject.dock(Bike.new)}.to raise_error("Docking station is full")
+      end
+    end
+
+    context "when a docking station object is created with a given capacity"  do
+      before do
+        @capacity = 5
+        @obj_with_capacity = DockingStation.new(@capacity)
+        @capacity.times { @obj_with_capacity.dock(Bike.new) }
+      end
+      it "will not let dock more bike than capacity" do
+        expect {@obj_with_capacity.dock(Bike.new)}.to raise_error("Docking station is full")
       end
     end
 
