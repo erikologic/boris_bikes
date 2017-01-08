@@ -42,10 +42,12 @@ describe DockingStation do
       end
     end
 
-    context 'when DockingStation has 1+ bike(s)' do
+    context 'when DockingStation has 1 bike' do
       before do
-        @bike = Bike.new
+        # let(:bike) { double :bike }
+        @bike = double(:bike)
         subject.dock(@bike)
+        allow(@bike).to receive(:working?).and_return(true)
       end
 
       it 'releases a Bike object' do
@@ -54,8 +56,40 @@ describe DockingStation do
       it 'is returning a Bike object which is working' do
         expect(subject.release_bike.working?).to eq true
       end
+      context "and bike is broken" do
+        before do
+          allow(@bike).to receive(:report_broken)
+          subject.bikes[0].report_broken
+          allow(@bike).to receive(:working?).and_return(false)
+        end
+        it "raises an error" do
+          expect {subject.release_bike}.to raise_error("No working bike available")
+        end
+      end
     end
 
+    context "when DockingStation has 2+ bikes" do
+      before do
+        @bike1 = Bike.new
+        @bike2 = Bike.new
+        @bike3 = Bike.new
+        subject.dock(@bike1)
+        subject.dock(@bike2)
+        subject.dock(@bike3)
+      end
+      context "and 1+ bike is broken" do
+        before do
+          subject.bikes[1].report_broken
+        end
+        it 'is returning a Bike object which is working' do
+          expect(subject.release_bike.working?).to eq true
+        end
+        it 'and all the other bikes are docked and in place into the array' do
+          subject.release_bike.working?          
+          expect(subject.bikes).to eq([@bike2,@bike3])
+        end
+      end
+    end
   end
 
   describe "#dock(bike)" do

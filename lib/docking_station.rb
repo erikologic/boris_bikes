@@ -10,7 +10,13 @@ class DockingStation
 
   def release_bike
     raise "No bikes in docking station." if empty?
-    @bikes.pop
+    @bikes.each_with_index do |bike, id|
+      if bike.working?
+        @bikes.delete_at(id)
+        return bike
+      end
+    end
+    raise "No working bike available"
   end
 
   def dock(bike)
@@ -20,7 +26,6 @@ class DockingStation
   end
 
   private
-
   def full?
     @bikes.count >= @capacity
   end
