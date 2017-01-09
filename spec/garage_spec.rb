@@ -1,1 +1,0 @@
-garage_spec.rb
