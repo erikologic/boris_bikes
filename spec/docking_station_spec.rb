@@ -50,6 +50,7 @@ describe DockingStation do
       before do
         # let(:bike) { double :bike }
         @bike = double(:bike)
+        binding.pry
         subject.dock(@bike)
         allow(@bike).to receive(:broken?).and_return(false)
       end
@@ -66,7 +67,7 @@ describe DockingStation do
           subject.bikes[0].report_broken
           allow(@bike).to receive(:broken?).and_return(true)
         end
-        it "raises an error" do
+        it "raises a No bikes available error" do
           expect {subject.release_bike}.to raise_error("No bikes available")
         end
       end
